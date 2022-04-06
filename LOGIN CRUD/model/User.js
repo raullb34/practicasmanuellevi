@@ -3,35 +3,35 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
-const usuarioSchema = new Schema({
+const userSchema = new Schema({
     username:{type: String, required: true, unique:true},
     password:{type: String, required: true}
 })
 
-usuarioSchema.pre('save', function(next){
-    const usuario = this;
+userSchema.pre('save', function(next){
+    const user = this;
     
     bcrypt.genSalt(10, (err, salt)=>{
         if(err){
             next(err);
         }
-        bcrypt.hash(usuario.password, salt, null, (err, hash)=>{
+        bcrypt.hash(user.password, salt, null, (err, hash)=>{
             if(err){
                 next(err)
             }
-            usuario.password = hash;
+            user.password = hash;
             next();
         })
     })
 })
 
-usuarioSchema.methods.compararPassword = function(password, cb){
-    bcrypt.compare(password, this.password,(err, sonIguales)=>{
+userSchema.methods.passwordCompare = function(password, cb){
+    bcrypt.compare(password, this.password,(err, areEquals)=>{
         if(err){
             return cb(err);
         }
-        cb(null, sonIguales);
+        cb(null, areEquals);
     })
 }
 
-module.exports = mongoose.model('Usuario', usuarioSchema);
+module.exports = mongoose.model('User', userSchema);

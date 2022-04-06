@@ -1,4 +1,4 @@
-const Deposit = require('../modelo/Deposit');
+const Deposit = require('../model/deposit');
 const mongoose = require('mongoose');
 
 //Create Deposit
@@ -52,41 +52,11 @@ exports.updateDeposit = (req, res, next)=>{
             return res.status(400).send(`Deposit with ID ${id} does not exists`);
         }
 
-        if(!req.body.newDepositId==''){  
-            Deposit.findByIdAndUpdate(id, {depositId: req.body.newDepositId}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newFromTank==''){  
-            Deposit.findByIdAndUpdate(id, {fromTank: req.body.newFromTank}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newFromCask==''){  
-            Deposit.findByIdAndUpdate(id, {fromCask: req.body.newFromCask}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newFillDate==''){  
-            Deposit.findByIdAndUpdate(id, {fillDate: req.body.newFillDate}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newEmptyDate==''){  
-            Deposit.findByIdAndUpdate(id, {emptyDate: req.body.newEmptyDate}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
+        Deposit.findByIdAndUpdate(id, {depositId: req.body.newDepositId, fromTank: req.body.newFromTank, fromCask: req.body.newFromCask, fillDate: req.body.newFillDate, emptyDate: req.body.newEmptyDate}, (err)=>{
+            if(err){
+                next(err);
+            }
+        })
         res.send(`Deposit updated`);
     })
 }

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const deposit = require('./Deposit');
+const deposit = require('./deposit');
 
 const tankSchema = new Schema({
     tankId:{type: String, unique: true},

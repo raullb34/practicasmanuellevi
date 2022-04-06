@@ -1,4 +1,4 @@
-const Cask = require('../modelo/Cask');
+const Cask = require('../model/cask');
 const mongoose = require('mongoose');
 
 //Create Cask
@@ -50,42 +50,11 @@ exports.updateCask = (req, res, next)=>{
         if(!existingCask){
             return res.status(400).send(`Cask with ID ${id} does not exists`);
         }
-        if(!req.body.newCaskId==''){  
-        
-            Cask.findByIdAndUpdate(id, {caskId: req.body.newCaskId}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newMaterial==''){  
-            Cask.findByIdAndUpdate(id, {material: req.body.newMaterial}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newCreationDate==''){  
-            Cask.findByIdAndUpdate(id, {creationDate: req.body.newCreationDate}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newRemoveDate==''){  
-            Cask.findByIdAndUpdate(id, {removeDate: req.body.newRemoveDate}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newDeposit==''){  
-            Cask.findByIdAndUpdate(id, {deposit: req.body.newDeposit}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
+        Cask.findByIdAndUpdate(id, {caskId: req.body.newCaskId, material: req.body.newMaterial, creationDate: req.body.newCreationDate, removeDate: req.body.newRemoveDate, deposit: req.body.newDeposit}, (err)=>{
+            if(err){
+                next(err);
+            }
+        })
         res.send(`Cask updated`);
     })    
 }

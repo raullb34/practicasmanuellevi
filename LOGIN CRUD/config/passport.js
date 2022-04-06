@@ -1,28 +1,28 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const Usuario = require('../modelo/Usuario');
+const User = require('../model/user');
 
-passport.serializeUser((usuario, done)=>{
-    done(null, usuario._id);
+passport.serializeUser((user, done)=>{
+    done(null, user._id);
 })
 
 passport.deserializeUser((id, done)=>{
-    Usuario.findById(id, (err, usuario)=>{
-        done(err, usuario);
+    User.findById(id, (err, user)=>{
+        done(err, user);
     })
 })
 
 passport.use(new LocalStrategy(
     {usernameField: 'username'},(username, password, done)=>{
-        Usuario.findOne({username}, (err, usuario)=>{
-            if(!usuario){
-                return done(null, false, {message: `Este username: ${username}, no esta resgitrado`});
+        User.findOne({username}, (err, user)=>{
+            if(!user){
+                return done(null, false, {message: `This username: ${username}, does not registered`});
             }else{
-                usuario.compararPassword(password, (err, sonIguales)=>{
-                   if(sonIguales){
-                       return done(null, usuario);;
+                user.passwordCompare(password, (err, areEquals)=>{
+                   if(areEquals){
+                       return done(null, user);;
                    } else{
-                       return done(null, false, {message: 'La contraseña no es válida'});
+                       return done(null, false, {message: 'Pasword is not valid'});
                    }
                 })
             }
@@ -31,10 +31,9 @@ passport.use(new LocalStrategy(
 ))
 
 
-exports.estaAutenticado = (req, res, next)=>{
+exports.isAuth = (req, res, next)=>{
     if(req.isAuthenticated()){
         return next();
     }
-
-    res.status(400).send(`tienes que loguearte para acceder a los recursos`);
+    res.status(400).send(`You have to log in to access resources`);
 }

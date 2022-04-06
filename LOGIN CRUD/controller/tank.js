@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Tank = require('../modelo/Tank');
+const Tank = require('../model/tank');
 
 //Create Tank
 exports.postCreateTank = (req, res, next)=>{
@@ -47,28 +47,11 @@ exports.updateTank = (req, res, next)=>{
         if(!existingTank){
             return res.status(400).send(`Tank with ID ${id} does not exists`);
         }
-        if(!req.body.newTankId==''){  
-        
-            Tank.findByIdAndUpdate(id, {tankId: req.body.newTankId}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
-        if(!req.body.newFromParcel==''){  
-            Tank.findByIdAndUpdate(id, {fromParcel: req.body.newFromParcel}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }        
-        if(!req.body.newDeposit==''){  
-            Tank.findByIdAndUpdate(id, {deposit: req.body.newDeposit}, (err)=>{
-                if(err){
-                    next(err);
-                }
-            })
-        }
+        Tank.findByIdAndUpdate(id, {tankId: req.body.newTankId, fromParcel: req.body.newFromParcel, deposit: req.body.newDeposit}, (err)=>{
+            if(err){
+                next(err);
+            }
+        })        
         res.send(`Tank updated`);
     })
    
