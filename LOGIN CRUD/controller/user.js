@@ -14,7 +14,7 @@ exports.postSignup = (req, res, next)=>{
 
     User.findOne({username: req.body.username}, (err, existingUser)=>{
         if(existingUser){
-            return res.status(400).send('username already exists')
+            return res.status(400).json('username already exists')
         }
         newUser.save((err)=>{
             if(err){
@@ -24,7 +24,7 @@ exports.postSignup = (req, res, next)=>{
                 if(err){
                     next(err);
                 }
-                res.send('Created User');
+                res.json('Created User');
             })
         })
     })
@@ -37,11 +37,11 @@ exports.postLogin = (req, res, next)=>{
             next(err);
         }
         if(!user){
-            return res.status(400).send('username or password does not valids');
+            return res.status(400).json('username or password does not valids');
         }
         req.logIn(user, (err)=>{
             if(err) next(err);
-            res.send('Login correct')
+            res.json('Login correct')
         })
     })(req, res, next);
 }
@@ -49,7 +49,7 @@ exports.postLogin = (req, res, next)=>{
 //cerrar sesión
 exports.logout = (req, res)=>{
     req.logout();
-    res.send('logout correcto');
+    res.json('logout correcto');
 }
 
 //Eliminar usuario
@@ -60,19 +60,19 @@ exports.deleteUser = (req, res, next)=>{
             return next(err);
         }
     })
-    res.send('User removed succesfully');
+    res.json('User removed succesfully');
 }
 
 //Actualizar usuario
 exports.updateUser = (req, res, next)=>{
     const userID = req.params.id;
-    var newUsername=req.body.newUsername;
-    var newPassword=req.body.newPassword;
+    var newUsername=req.body.username;
+    var newPassword=req.body.password;
 
     //find user with params.id
     User.findOne({_id: userID}, (err, existingUser)=>{
         if(!existingUser){
-            return res.status(400).send('User to modify inexistent')
+            return res.status(400).json('User to modify inexistent')
         }
         //find user with newUsername
         if(!newUsername==''){
@@ -103,6 +103,6 @@ exports.updateUser = (req, res, next)=>{
                 })
             })
         }
-        res.send(`User updated succesfully`);  
+        res.json(`User updated succesfully`);  
     })    
 }

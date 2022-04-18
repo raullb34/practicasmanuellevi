@@ -3,23 +3,29 @@ const mongoose = require('mongoose');
 
 //Create Deposit
 exports.postCreateDeposit = (req, res, next)=>{
+
+    var fillDate = Date.parse(req.body.fillDate);
+    var emptyDate = Date.parse(req.body.emptyDate);
+
     const newDeposit = new Deposit({
         depositId:req.body.depositId,
         fromTank:req.body.fromTank,
         fromCask: req.body.fromCask,
-        fillDate: req.body.fillDate,
-        emptyDate: req.body.emptyDate,
+        fillDate: fillDate,
+        emptyDate: emptyDate,
     })
+
+    
 
     Deposit.findOne({depositId: req.body.depositId}, (err, existingDeposit)=>{
         if(existingDeposit){
-            return res.status(400).send(`Deposit with ID ${req.body.depositId} already exists`);
+            return res.status(400).json(`Deposit with ID ${req.body.depositId} already exists`);
         }
         newDeposit.save((err)=>{
             if(err){
                 next(err);
             }
-            res.send(`Deposit created`);
+            res.json(`Deposit created`);
         })
     })
 }
@@ -30,14 +36,14 @@ exports.deleteDeposit = (req, res, next)=>{
 
     Deposit.findOne({_id: id}, (err, existingDeposit)=>{
         if(!existingDeposit){
-            return res.status(400).send(`Deposit with ID ${id} does not exists`);
+            return res.status(400).json(`Deposit with ID ${id} does not exists`);
         }
         Deposit.findByIdAndRemove(id, (err)=>{
             if(err){
                 next(err);
             }
         });
-        res.send(`Deposit removed`);
+        res.json(`Deposit removed`);
     })
 
     
@@ -49,15 +55,18 @@ exports.updateDeposit = (req, res, next)=>{
 
     Deposit.findOne({_id: id}, (err, existingDeposit)=>{
         if(!existingDeposit){
-            return res.status(400).send(`Deposit with ID ${id} does not exists`);
+            return res.status(400).json(`Deposit with ID ${id} does not exists`);
         }
 
-        Deposit.findByIdAndUpdate(id, {depositId: req.body.newDepositId, fromTank: req.body.newFromTank, fromCask: req.body.newFromCask, fillDate: req.body.newFillDate, emptyDate: req.body.newEmptyDate}, (err)=>{
+        var fillDate = Date.parse(req.body.fillDate);
+        var emptyDate = Date.parse(req.body.emptyDate);
+
+        Deposit.findByIdAndUpdate(id, {depositId: req.body.depositId, fromTank: req.body.fromTank, fromCask: req.body.fromCask, fillDate: fillDate, emptyDate: emptyDate}, (err)=>{
             if(err){
                 next(err);
             }
         })
-        res.send(`Deposit updated`);
+        res.json(`Deposit updated`);
     })
 }
 
@@ -66,7 +75,15 @@ exports.readDeposit = (req, res, next)=>{
     
     Deposit.findById(id, (err, deposit)=>{
         if(err) next(err);
-        res.send(deposit);
+        res.json(deposit);
     })
 }
 
+
+//Read all deposits
+exports.readAllDeposits = (req, res, next)=>{
+    Deposit.find((err, deposits)=>{
+        if(err) next(err);
+        res.json(deposits)
+    })
+}

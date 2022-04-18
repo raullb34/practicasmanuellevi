@@ -13,11 +13,15 @@ const { initialize } = require('passport/lib');
 const PORT = 3000;
 
 
-const mongoConnection = 'mongodb://localhost:27017/usuarios';
+const mongoConnection = 'mongodb://localhost:27017/users';
 const app = express();
 
-mongoose.Promise = global.Promise;
+
+
 mongoose.connect(mongoConnection);
+module.exports = mongoose;
+
+mongoose.Promise = global.Promise;
 mongoose.connection.on('error',(err)=>{
     throw err;
     process.exit(1);
@@ -47,3 +51,5 @@ app.listen(PORT,()=>{
 })
 
 app.use(routes);
+
+module.exports = app;

@@ -13,7 +13,7 @@ const PORT = 3000;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-//RUTAS DE USUARIOS
+//USERS
 //registro
 app.post('/signup', userController.postSignup);
 //iniciar sesión
@@ -30,7 +30,7 @@ app.get('/userInfo', passportConfig.isAuth, (req, res)=>{
 })
 
 
-
+//DEPOSITS
 //Create
 app.post('/createDeposit', depositController.postCreateDeposit);
 //delete
@@ -39,8 +39,11 @@ app.delete('/deleteDeposit/:id', depositController.deleteDeposit);
 app.patch('/updateDeposit/:id', depositController.updateDeposit);
 //read
 app.get('/depositInfo/:id', depositController.readDeposit);
+//read all deposits
+app.get('/allDepositsInfo', depositController.readAllDeposits);
 
 
+//CASKS
 //Create
 app.post('/createCask', caskController.postCreateCask);
 //delete
@@ -49,8 +52,11 @@ app.delete('/deleteCask/:id', caskController.deleteCask);
 app.patch('/updateCask/:id', caskController.updateCask);
 //read
 app.get('/caskInfo/:id', caskController.readCask);
+//read all casks
+app.get('/allCasksInfo', caskController.readAllCasks);
 
 
+//TANKS
 //Create
 app.post('/createTank', tankController.postCreateTank);
 //delete
@@ -59,5 +65,7 @@ app.delete('/deleteTank/:id', tankController.deleteTank);
 app.patch('/updateTank/:id', tankController.updateTank);
 //read
 app.get('/tankInfo/:id', tankController.readTank);
+//read all tanks
+app.get('/allTanksInfo', tankController.readAllTanks);
 
 module.exports = app;
