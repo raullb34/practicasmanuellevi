@@ -1,5 +1,4 @@
 const { response } = require('express');
-const passport = require('passport');
 const User = require('../model/user');
 const bcrypt = require('bcrypt-nodejs');
 const req = require('express/lib/request');
@@ -7,35 +6,26 @@ const service = require('../services/services');
 const mongoose = require('mongoose');
 
 //crear usuario
-exports.postSignup = (req, res, next)=>{
+exports.postSignup = (req, res)=>{
     const newUser = new User({
         username: req.body.username,
         password: req.body.password
     });
 
-    User.findOne({username: req.body.username}, (err, existingUser)=>{
-        if(existingUser){
-            return res.status(400).send({message: 'username already exists'})
-        }
-        newUser.save((err)=>{
-            if(err){
-                next(err);
-            }
-            res.status(200).send({ 
-                message: 'login correct',
-                token: service.createToken(newUser)
-            })
-        })
+    newUser.save((err)=>{
+        if(err) return res.status(500).send({message:`Error al crear el usuario: ${err}`})
+        
+        return res.status(200).send({token: service.createToken(newUser)})
     })
 }
 
 //iniciar sesión
-exports.postLogin = (req, res, next)=>{
+exports.postLogin = (req, res)=>{
     User.find({username: req.body.username},(err, user)=>{
         if(err) return res.status(500).send({message: err})
         if(!user) return res.status(404).send({message: 'username or password does not valids'})
 
-        req.user = user;
+        req.user = user
         res.status(200).send({
             message: 'Login correct',
             token: service.createToken(user)

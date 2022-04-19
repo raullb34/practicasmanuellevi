@@ -3,12 +3,12 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const passport = require('passport');
-const passportConfig = require('./config/passport');
+// const passport = require('passport');
+// const passportConfig = require('./config/passport');
 const req = require('express/lib/request');
 const routes = require('./routes/routes');
 const { response } = require('express');
-const { initialize } = require('passport/lib');
+// const { initialize } = require('passport/lib');
 const config = require('./config/config.json');
 global.config = config;
 
@@ -41,8 +41,8 @@ app.use(session({
 }))
 
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.get('/', (req, res)=>{
     res.send({message: `Welcome to this page, is listening in PORT: ${config.PORT}`})

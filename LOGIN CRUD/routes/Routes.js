@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const passport = require('passport');
-const passportConfig = require('../config/passport');
+// const passport = require('passport');
+// const passportConfig = require('../config/passport');
 const userController = require('../controller/user');
 const depositController = require('../controller/deposit');
 const caskController = require('../controller/cask');
