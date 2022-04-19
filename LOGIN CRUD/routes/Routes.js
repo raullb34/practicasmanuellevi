@@ -19,8 +19,6 @@ app.use(bodyParser.json());
 app.post('/signup', userController.postSignup);
 //iniciar sesión
 app.post('/login', userController.postLogin);
-//cerrar sesión
-app.get('/logout', auth, userController.logout);
 //borrar usuario
 app.delete('/deleteUser/:id', auth, userController.deleteUser);
 //actualizar usuario

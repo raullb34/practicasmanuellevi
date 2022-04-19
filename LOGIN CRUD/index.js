@@ -16,7 +16,10 @@ global.config = config;
 
 const app = express();
 
-
+// mongoose.connect(config.urlDB, (err, res)=>{
+//     if(err) throw err;
+//     console.log('Conexión a la base de datos establecida...')
+// })
 
 mongoose.connect(config.urlDB);
 module.exports = mongoose;

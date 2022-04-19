@@ -43,11 +43,6 @@ exports.postLogin = (req, res, next)=>{
     })
 }
 
-//cerrar sesión
-exports.logout = (req, res)=>{
-    req.logout();
-    res.send({message: 'correct logout'})
-}
 
 //Eliminar usuario
 exports.deleteUser = (req, res, next)=>{
