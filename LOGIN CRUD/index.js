@@ -9,16 +9,16 @@ const req = require('express/lib/request');
 const routes = require('./routes/routes');
 const { response } = require('express');
 const { initialize } = require('passport/lib');
+const config = require('./config/config.json');
+global.config = config;
 
-const PORT = 3000;
 
 
-const mongoConnection = 'mongodb://localhost:27017/users';
 const app = express();
 
 
 
-mongoose.connect(mongoConnection);
+mongoose.connect(config.urlDB);
 module.exports = mongoose;
 
 mongoose.Promise = global.Promise;
@@ -32,7 +32,7 @@ app.use(session({
     resave:true,
     saveUninitialized: true,
     store: new MongoStore({
-        mongoUrl: mongoConnection,
+        mongoUrl: config.urlDB,
         autoReconnect: true
     })
 }))
@@ -42,12 +42,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res)=>{
-    res.send(`Welcome to this page, is listening in PORT: ${PORT}`)
+    res.send({message: `Welcome to this page, is listening in PORT: ${config.PORT}`})
 })
 
 //Puerto de escucha
-app.listen(PORT,()=>{
-    console.log(`listening in PORT: ${PORT}`);
+app.listen(config.PORT,()=>{
+    console.log(`listening in PORT: ${config.PORT}`);
 })
 
 app.use(routes);

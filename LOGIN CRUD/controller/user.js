@@ -3,6 +3,7 @@ const passport = require('passport');
 const User = require('../model/user');
 const bcrypt = require('bcrypt-nodejs');
 const req = require('express/lib/request');
+const service = require('../services/services');
 const mongoose = require('mongoose');
 
 //crear usuario
@@ -14,17 +15,15 @@ exports.postSignup = (req, res, next)=>{
 
     User.findOne({username: req.body.username}, (err, existingUser)=>{
         if(existingUser){
-            return res.status(400).json('username already exists')
+            return res.status(400).send({message: 'username already exists'})
         }
         newUser.save((err)=>{
             if(err){
                 next(err);
             }
-            req.logIn(newUser, (err)=>{
-                if(err){
-                    next(err);
-                }
-                res.json('Created User');
+            res.status(200).send({ 
+                message: 'login correct',
+                token: service.createToken(newUser)
             })
         })
     })
@@ -32,24 +31,22 @@ exports.postSignup = (req, res, next)=>{
 
 //iniciar sesión
 exports.postLogin = (req, res, next)=>{
-    passport.authenticate('local', (err, user, info)=>{
-        if(err){
-            next(err);
-        }
-        if(!user){
-            return res.status(400).json('username or password does not valids');
-        }
-        req.logIn(user, (err)=>{
-            if(err) next(err);
-            res.json('Login correct')
+    User.find({username: req.body.username},(err, user)=>{
+        if(err) return res.status(500).send({message: err})
+        if(!user) return res.status(404).send({message: 'username or password does not valids'})
+
+        req.user = user;
+        res.status(200).send({
+            message: 'Login correct',
+            token: service.createToken(user)
         })
-    })(req, res, next);
+    })
 }
 
 //cerrar sesión
 exports.logout = (req, res)=>{
     req.logout();
-    res.json('logout correcto');
+    res.send({message: 'correct logout'})
 }
 
 //Eliminar usuario
@@ -60,7 +57,7 @@ exports.deleteUser = (req, res, next)=>{
             return next(err);
         }
     })
-    res.json('User removed succesfully');
+    res.send({message: 'User removed succesfully'});
 }
 
 //Actualizar usuario
@@ -72,7 +69,7 @@ exports.updateUser = (req, res, next)=>{
     //find user with params.id
     User.findOne({_id: userID}, (err, existingUser)=>{
         if(!existingUser){
-            return res.status(400).json('User to modify inexistent')
+            return res.status(400).send({message: 'User to modify inexistent'})
         }
         //find user with newUsername
         if(!newUsername==''){
@@ -103,6 +100,6 @@ exports.updateUser = (req, res, next)=>{
                 })
             })
         }
-        res.json(`User updated succesfully`);  
+        res.send({message: `User updated succesfully`});  
     })    
 }

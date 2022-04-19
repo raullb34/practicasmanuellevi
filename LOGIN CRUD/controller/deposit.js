@@ -19,13 +19,13 @@ exports.postCreateDeposit = (req, res, next)=>{
 
     Deposit.findOne({depositId: req.body.depositId}, (err, existingDeposit)=>{
         if(existingDeposit){
-            return res.status(400).json(`Deposit with ID ${req.body.depositId} already exists`);
+            return res.status(400).send({message:`Deposit with ID ${req.body.depositId} already exists`});
         }
         newDeposit.save((err)=>{
             if(err){
                 next(err);
             }
-            res.json(`Deposit created`);
+            res.send({message:`Deposit created`});
         })
     })
 }
@@ -36,14 +36,14 @@ exports.deleteDeposit = (req, res, next)=>{
 
     Deposit.findOne({_id: id}, (err, existingDeposit)=>{
         if(!existingDeposit){
-            return res.status(400).json(`Deposit with ID ${id} does not exists`);
+            return res.status(400).send({message:`Deposit with ID ${id} does not exists`});
         }
         Deposit.findByIdAndRemove(id, (err)=>{
             if(err){
                 next(err);
             }
         });
-        res.json(`Deposit removed`);
+        res.send({message:`Deposit removed`});
     })
 
     
@@ -55,7 +55,7 @@ exports.updateDeposit = (req, res, next)=>{
 
     Deposit.findOne({_id: id}, (err, existingDeposit)=>{
         if(!existingDeposit){
-            return res.status(400).json(`Deposit with ID ${id} does not exists`);
+            return res.status(400).send({message:`Deposit with ID ${id} does not exists`});
         }
 
         var fillDate = Date.parse(req.body.fillDate);
@@ -66,7 +66,7 @@ exports.updateDeposit = (req, res, next)=>{
                 next(err);
             }
         })
-        res.json(`Deposit updated`);
+        res.send({message: `Deposit updated`});
     })
 }
 

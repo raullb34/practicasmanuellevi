@@ -17,13 +17,13 @@ exports.postCreateCask = (req, res, next)=>{
     
     Cask.findOne({caskId: req.body.caskId}, (err, existingCask)=>{
         if(existingCask){
-            return res.status(400).json(`Cask with ID ${req.body.caskId} already exists`);
+            return res.status(400).send({message: `Cask with ID ${req.body.caskId} already exists`});
         }
         newCask.save((err)=>{
             if(err){
                 next(err);
             }
-            res.json('Cask created');
+            res.send({message: 'Cask created'});
         })
     })    
 }
@@ -34,14 +34,14 @@ exports.deleteCask = (req, res, next)=>{
     const id  = req.params.id;
     Cask.findOne({_id: id}, (err, existingCask)=>{
         if(!existingCask){
-            return res.status(400).json(`Cask with ID ${id} does not exists`);
+            return res.status(400).send({message: `Cask with ID ${id} does not exists`});
         }
         Cask.findByIdAndRemove(id, (err)=>{
             if(err){
                 next(err);
             }
         });
-        res.json(`Cask removed`);
+        res.send({message: `Cask removed`});
     })    
 }
 
@@ -55,14 +55,14 @@ exports.updateCask = (req, res, next)=>{
 
     Cask.findOne({_id: id}, (err, existingCask)=>{
         if(!existingCask){
-            return res.status(400).json(`Cask with ID ${id} does not exists`);
+            return res.status(400).send({message: `Cask with ID ${id} does not exists`});
         }
         Cask.findByIdAndUpdate(id, {caskId: req.body.caskId, material: req.body.material, creationDate: creationDate, removeDate: removeDate, deposit: req.body.deposit}, (err)=>{
             if(err){
                 next(err);
             }
         })
-        res.json(`Cask updated`);
+        res.send({message:`Cask updated`});
     })    
 }
 

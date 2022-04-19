@@ -6,6 +6,7 @@ const userController = require('../controller/user');
 const depositController = require('../controller/deposit');
 const caskController = require('../controller/cask');
 const tankController = require('../controller/tank');
+const auth = require('../middlewares/auth');
 const app = express.Router();
 
 const PORT = 3000;
@@ -19,14 +20,14 @@ app.post('/signup', userController.postSignup);
 //iniciar sesión
 app.post('/login', userController.postLogin);
 //cerrar sesión
-app.get('/logout', passportConfig.isAuth, userController.logout);
+app.get('/logout', auth, userController.logout);
 //borrar usuario
-app.delete('/deleteUser/:id', passportConfig.isAuth, userController.deleteUser);
+app.delete('/deleteUser/:id', auth, userController.deleteUser);
 //actualizar usuario
-app.patch('/updateUser/:id', passportConfig.isAuth, userController.updateUser);
+app.patch('/updateUser/:id', auth, userController.updateUser);
 //información del usuario
-app.get('/userInfo', passportConfig.isAuth, (req, res)=>{
-    res.json(req.user);
+app.get('/userInfo', auth, (req, res)=>{
+    res.send({message: req.user});
 })
 
 
