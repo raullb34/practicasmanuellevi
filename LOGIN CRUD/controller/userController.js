@@ -6,6 +6,16 @@ const service = require('../services/services');
 const mongoose = require('mongoose');
 
 //crear usuario
+/**
+ * 
+ * @route POST /users
+ * @function create a new user
+ * @param {string} username.query.required - username - eg:username 
+ * @param {string} password.query.required - password - eg:password
+ * @returns {object} 200 - A Array of user info
+ * @returns {error} 500 - A message about the error
+ *  
+ */
 exports.postSignup = (req, res)=>{
     const newUser = new User({
         username: req.body.username,
@@ -20,6 +30,17 @@ exports.postSignup = (req, res)=>{
 }
 
 //iniciar sesión
+/**
+ * 
+ * @route POST /login
+ * @function logIn with an user
+ * @param {string} username.query.required - username - eg:username 
+ * @param {string} password.query.required - password - eg:password
+ * @returns {object} 200 - A Array of user info and a message of confirmation
+ * @returns {error} 500 - A message about the error
+ * @returns {error} 404 - A message about the error
+ *  
+ */
 exports.postLogin = (req, res)=>{
  
     User.findOne({username: req.body.username},(err, user)=>{
@@ -46,6 +67,15 @@ exports.postLogin = (req, res)=>{
 
 
 //Eliminar usuario
+/**
+ * 
+ * @route DELETE /users
+ * @function remove an user
+ * @param {:id} id.query.required
+ * @returns {object} 200 - A message of confirmation
+ * @returns {error} default - Unexpected error
+ *  
+ */
 exports.deleteUser = (req, res, next)=>{
     const userID = req.params.id;
     User.findByIdAndRemove(userID, (err)=>{
@@ -56,7 +86,19 @@ exports.deleteUser = (req, res, next)=>{
     res.send({message: 'User removed succesfully'});
 }
 
+
 //Actualizar usuario
+/**
+ * 
+ * @route PATCH /users
+ * @function update an user
+ * @param {string} username.query.required - username - eg:username 
+ * @param {string} password.query.required - password - eg:password
+ * @param {:id} id.query.required
+ * @returns {object} 200 - A message of confirmation
+ * @returns {error} 400 - A message about error
+ *  
+ */
 exports.updateUser = (req, res, next)=>{
     const userID = req.params.id;
     var newUsername=req.body.username;
@@ -101,6 +143,14 @@ exports.updateUser = (req, res, next)=>{
 }
 
 //ver info de usuario
+/**
+ * 
+ * @route PATCH /users
+ * @function update an user
+ * @param {:id} id.query.required
+ * @returns {object} 200 - A message with user info
+ *  
+ */
 exports.userInfo = (req, res)=>{
     res.send({
         message: req.user
