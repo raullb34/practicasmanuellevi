@@ -2,10 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // const passport = require('passport');
 // const passportConfig = require('../config/passport');
-const userController = require('../controller/user');
-const depositController = require('../controller/deposit');
-const caskController = require('../controller/cask');
-const tankController = require('../controller/tank');
+const userController = require('../controller/userController');
+const depositController = require('../controller/depositController');
+const caskController = require('../controller/caskController');
+const tankController = require('../controller/tankController');
 const auth = require('../middlewares/auth');
 const app = express.Router();
 
@@ -29,40 +29,40 @@ app.get('/users', auth, userController.userInfo);
 
 //DEPOSITS
 //Create
-app.post('/deposits', depositController.postCreateDeposit);
+app.post('/deposits', auth, depositController.postCreateDeposit);
 //delete
-app.delete('/deposits/:id', depositController.deleteDeposit);
+app.delete('/deposits/:id', auth, depositController.deleteDeposit);
 //update
-app.patch('/deposits/:id', depositController.updateDeposit);
+app.patch('/deposits/:id', auth, depositController.updateDeposit);
 //read
-app.get('/deposits/:id', depositController.readDeposit);
+app.get('/deposits/:id', auth, depositController.readDeposit);
 //read all deposits
-app.get('/alldeposits', depositController.readAllDeposits);
+app.get('/alldeposits', auth, depositController.readAllDeposits);
 
 
 //CASKS
 //Create
-app.post('/casks', caskController.postCreateCask);
+app.post('/casks', auth, caskController.postCreateCask);
 //delete
-app.delete('/casks/:id', caskController.deleteCask);
+app.delete('/casks/:id', auth, caskController.deleteCask);
 //update
-app.patch('/casks/:id', caskController.updateCask);
+app.patch('/casks/:id', auth, caskController.updateCask);
 //read
-app.get('/casks/:id', caskController.readCask);
+app.get('/casks/:id', auth, caskController.readCask);
 //read all casks
-app.get('/allcasks', caskController.readAllCasks);
+app.get('/allcasks', auth, caskController.readAllCasks);
 
 
 //TANKS
 //Create
-app.post('/tanks', tankController.postCreateTank);
+app.post('/tanks', auth, tankController.postCreateTank);
 //delete
-app.delete('/tanks/:id', tankController.deleteTank);
+app.delete('/tanks/:id', auth, tankController.deleteTank);
 //update
-app.patch('/tanks/:id', tankController.updateTank);
+app.patch('/tanks/:id', auth, tankController.updateTank);
 //read
-app.get('/tanks/:id', tankController.readTank);
+app.get('/tanks/:id', auth, tankController.readTank);
 //read all tanks
-app.get('/alltanks', tankController.readAllTanks);
+app.get('/alltanks', auth, tankController.readAllTanks);
 
 module.exports = app;
