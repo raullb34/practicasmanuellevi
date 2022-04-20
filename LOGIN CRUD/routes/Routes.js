@@ -16,55 +16,53 @@ app.use(bodyParser.json());
 
 //USERS
 //registro
-app.post('/signup', userController.postSignup);
+app.post('/users', userController.postSignup);
 //iniciar sesión
 app.post('/login', userController.postLogin);
 //borrar usuario
-app.delete('/deleteUser/:id', auth, userController.deleteUser);
+app.delete('/users/:id', auth, userController.deleteUser);
 //actualizar usuario
-app.patch('/updateUser/:id', auth, userController.updateUser);
+app.patch('/users/:id', auth, userController.updateUser);
 //información del usuario
-app.get('/userInfo', auth, (req, res)=>{
-    res.send({message: req.user});
-})
+app.get('/users', auth, userController.userInfo);
 
 
 //DEPOSITS
 //Create
-app.post('/createDeposit', depositController.postCreateDeposit);
+app.post('/deposits', depositController.postCreateDeposit);
 //delete
-app.delete('/deleteDeposit/:id', depositController.deleteDeposit);
+app.delete('/deposits/:id', depositController.deleteDeposit);
 //update
-app.patch('/updateDeposit/:id', depositController.updateDeposit);
+app.patch('/deposits/:id', depositController.updateDeposit);
 //read
-app.get('/depositInfo/:id', depositController.readDeposit);
+app.get('/deposits/:id', depositController.readDeposit);
 //read all deposits
-app.get('/allDepositsInfo', depositController.readAllDeposits);
+app.get('/alldeposits', depositController.readAllDeposits);
 
 
 //CASKS
 //Create
-app.post('/createCask', caskController.postCreateCask);
+app.post('/casks', caskController.postCreateCask);
 //delete
-app.delete('/deleteCask/:id', caskController.deleteCask);
+app.delete('/casks/:id', caskController.deleteCask);
 //update
-app.patch('/updateCask/:id', caskController.updateCask);
+app.patch('/casks/:id', caskController.updateCask);
 //read
-app.get('/caskInfo/:id', caskController.readCask);
+app.get('/casks/:id', caskController.readCask);
 //read all casks
-app.get('/allCasksInfo', caskController.readAllCasks);
+app.get('/allcasks', caskController.readAllCasks);
 
 
 //TANKS
 //Create
-app.post('/createTank', tankController.postCreateTank);
+app.post('/tanks', tankController.postCreateTank);
 //delete
-app.delete('/deleteTank/:id', tankController.deleteTank);
+app.delete('/tanks/:id', tankController.deleteTank);
 //update
-app.patch('/updateTank/:id', tankController.updateTank);
+app.patch('/tanks/:id', tankController.updateTank);
 //read
-app.get('/tankInfo/:id', tankController.readTank);
+app.get('/tanks/:id', tankController.readTank);
 //read all tanks
-app.get('/allTanksInfo', tankController.readAllTanks);
+app.get('/alltanks', tankController.readAllTanks);
 
 module.exports = app;

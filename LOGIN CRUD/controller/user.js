@@ -21,9 +21,11 @@ exports.postSignup = (req, res)=>{
 
 //iniciar sesión
 exports.postLogin = (req, res)=>{
-    User.find({username: req.body.username},(err, user)=>{
+ 
+    User.findOne({username: req.body.username},(err, user)=>{
         if(err) return res.status(500).send({message: err})
         if(!user) return res.status(404).send({message: 'username or password does not valids'})
+        console.log(user);
 
         req.user = user
         res.status(200).send({
@@ -31,6 +33,7 @@ exports.postLogin = (req, res)=>{
             token: service.createToken(user)
         })
     })
+
 }
 
 
@@ -87,4 +90,11 @@ exports.updateUser = (req, res, next)=>{
         }
         res.send({message: `User updated succesfully`});  
     })    
+}
+
+//ver info de usuario
+exports.userInfo = (req, res)=>{
+    res.send({
+        message: req.user
+    })
 }
