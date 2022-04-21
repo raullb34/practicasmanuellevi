@@ -85,30 +85,6 @@ const mongoose = require('mongoose');
     }
 }
 
-// exports.postLogin = (req, res)=>{ 
-//     User.findOne({username: req.body.username},(err, user)=>{
-//         if(err) return res.status(500).send({message: err})
-//         if(!user) return res.status(404).send({message: 'username or password does not valids'})
-
-//         var validPassword = bcrypt.compare(req.body.password, user.password, (err, eq)=>{
-//             if(err){
-//                 return err;
-//             }
-//             if(eq){
-//                 req.user = user
-//                 res.status(200).send({
-//                     message: 'Login correct',
-//                     token: service.createToken(user)
-//                 })
-//             }else{
-//                 return res.status(404).send({message: 'username or password does not valids'})
-//             }
-//         })
-//     })
-
-// }
-
-
 //Eliminar usuario
 /**
  * 
