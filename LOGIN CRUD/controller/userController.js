@@ -13,7 +13,7 @@ const mongoose = require('mongoose');
  * @param {string} username.query.required - username - eg:username 
  * @param {string} password.query.required - password - eg:password
  * @returns {object} 200 - A Array of user info
- * @returns {error} 500 - A message about the error
+ * @returns {error} 409 - A message about the error
  *  
  */
 exports.postSignup = (req, res)=>{
@@ -23,7 +23,7 @@ exports.postSignup = (req, res)=>{
     });
 
     newUser.save((err)=>{
-        if(err) return res.status(500).send({message:`Error al crear el usuario: ${err}`})
+        if(err) return res.status(409).send({message:`username already registered: ${err}`})
         
         return res.status(200).send({token: service.createToken(newUser)})
     })
@@ -69,7 +69,7 @@ exports.postLogin = (req, res)=>{
 //Eliminar usuario
 /**
  * 
- * @route DELETE /users
+ * @route DELETE /users/:id
  * @function remove an user
  * @param {:id} id.query.required
  * @returns {object} 200 - A message of confirmation
@@ -90,13 +90,13 @@ exports.deleteUser = (req, res, next)=>{
 //Actualizar usuario
 /**
  * 
- * @route PATCH /users
+ * @route PATCH /users/:id
  * @function update an user
  * @param {string} username.query.required - username - eg:username 
  * @param {string} password.query.required - password - eg:password
  * @param {:id} id.query.required
  * @returns {object} 200 - A message of confirmation
- * @returns {error} 400 - A message about error
+ * @returns {error} 404 - A message about error
  *  
  */
 exports.updateUser = (req, res, next)=>{
@@ -107,7 +107,7 @@ exports.updateUser = (req, res, next)=>{
     //find user with params.id
     User.findOne({_id: userID}, (err, existingUser)=>{
         if(!existingUser){
-            return res.status(400).send({message: 'User to modify inexistent'})
+            return res.status(404).send({message: 'User to modify inexistent'})
         }
         //find user with newUsername
         if(!newUsername==''){
@@ -145,8 +145,8 @@ exports.updateUser = (req, res, next)=>{
 //ver info de usuario
 /**
  * 
- * @route PATCH /users
- * @function update an user
+ * @route GET /users
+ * @function show info about user
  * @param {:id} id.query.required
  * @returns {object} 200 - A message with user info
  *  
