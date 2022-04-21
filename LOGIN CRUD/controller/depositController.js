@@ -16,7 +16,8 @@ const mongoose = require('mongoose');
  * @returns {error} default - A message about error
  *  
  */
-exports.postCreateDeposit = (req, res, next)=>{
+
+ exports.postCreateDeposit = async (req, res)=>{
 
     var fillDate = Date.parse(req.body.fillDate);
     var emptyDate = Date.parse(req.body.emptyDate);
@@ -29,20 +30,20 @@ exports.postCreateDeposit = (req, res, next)=>{
         emptyDate: emptyDate,
     })
 
-    
+    let success = await newDeposit.save().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
 
-    Deposit.findOne({depositId: req.body.depositId}, (err, existingDeposit)=>{
-        if(existingDeposit){
-            return res.status(409).send({message:`Deposit with ID ${req.body.depositId} already exists`});
+    if(success){
+        if(!success.error){
+            return res.send({message:`Deposit created`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
         }
-        newDeposit.save((err)=>{
-            if(err){
-                next(err);
-            }
-            res.send({message:`Deposit created`});
-        })
-    })
+    }
 }
+
 
 //Remove Deposit
 /**
@@ -55,22 +56,23 @@ exports.postCreateDeposit = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.deleteDeposit = (req, res, next)=>{
+exports.deleteDeposit = async (req, res, next)=>{
     const id  = req.params.id;
 
-    Deposit.findOne({_id: id}, (err, existingDeposit)=>{
-        if(!existingDeposit){
-            return res.status(404).send({message:`Deposit with ID ${id} does not exists`});
-        }
-        Deposit.findByIdAndRemove(id, (err)=>{
-            if(err){
-                next(err);
-            }
-        });
-        res.send({message:`Deposit removed`});
-    })
+    let success = await Deposit.findByIdAndRemove(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
 
-    
+    if(success){
+        if(!success.error){
+            return res.send({message:`Deposit removed`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error})
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent deposit"});
+    }   
 }
 
 //Update Deposit
@@ -89,24 +91,28 @@ exports.deleteDeposit = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.updateDeposit = (req, res, next)=>{
+
+ exports.updateDeposit = async (req, res, next)=>{
     const id = req.params.id;
 
-    Deposit.findOne({_id: id}, (err, existingDeposit)=>{
-        if(!existingDeposit){
-            return res.status(404).send({message:`Deposit with ID ${id} does not exists`});
-        }
+    var fillDate = Date.parse(req.body.fillDate);
+    var emptyDate = Date.parse(req.body.emptyDate);
 
-        var fillDate = Date.parse(req.body.fillDate);
-        var emptyDate = Date.parse(req.body.emptyDate);
-
-        Deposit.findByIdAndUpdate(id, {depositId: req.body.depositId, fromTank: req.body.fromTank, fromCask: req.body.fromCask, fillDate: fillDate, emptyDate: emptyDate}, (err)=>{
-            if(err){
-                next(err);
-            }
-        })
-        res.send({message: `Deposit updated`});
+    
+    let success = await Deposit.findByIdAndUpdate(id, {depositId: req.body.depositId, fromTank: req.body.fromTank, fromCask: req.body.fromCask, fillDate: fillDate, emptyDate: emptyDate}).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+    
+    if(success){
+        if(!success.error){
+            return res.send({message:`Deposit updated`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error})
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent deposit"});
+    }   
 }
 
 //Ver info de un deposito
@@ -119,13 +125,21 @@ exports.updateDeposit = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readDeposit = (req, res, next)=>{
+exports.readDeposit = async (req, res)=>{
     const id = req.params.id;
-    
-    Deposit.findById(id, (err, deposit)=>{
-        if(err) next(err);
-        res.json(deposit);
+    let success = await Deposit.findById(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent deposit" });
+    }
 }
 
 
@@ -138,9 +152,17 @@ exports.readDeposit = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readAllDeposits = (req, res, next)=>{
-    Deposit.find((err, deposits)=>{
-        if(err) next(err);
-        res.json(deposits)
+exports.readAllDeposits = async (req, res)=>{
+
+    let success = await Deposit.find().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }
 }

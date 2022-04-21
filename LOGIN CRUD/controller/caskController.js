@@ -16,10 +16,10 @@ const mongoose = require('mongoose');
  * @returns {error} default - A message about error
  *  
  */
-exports.postCreateCask = (req, res, next)=>{
+exports.postCreateCask = async (req, res)=>{
 
-    var creationDate = req.body.creationDate;
-    var removeDate = req.body.removeDate;
+    var creationDate = Date.parse(req.body.creationDate);
+    var removeDate = Date.parse(req.body.removeDate);
 
     const newCask = new Cask({
     caskId:req.body.caskId,
@@ -28,18 +28,19 @@ exports.postCreateCask = (req, res, next)=>{
     removeDate: removeDate,
     deposit:req.body.deposit
     })
-    
-    Cask.findOne({caskId: req.body.caskId}, (err, existingCask)=>{
-        if(existingCask){
-            return res.status(409).send({message: `Cask with ID ${req.body.caskId} already exists`});
+
+    let success = await newCask.save().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`cask created`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
         }
-        newCask.save((err)=>{
-            if(err){
-                next(err);
-            }
-            res.send({message: 'Cask created'});
-        })
-    })    
+    }
 }
 
 
@@ -54,19 +55,23 @@ exports.postCreateCask = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.deleteCask = (req, res, next)=>{
+exports.deleteCask = async (req, res)=>{
     const id  = req.params.id;
-    Cask.findOne({_id: id}, (err, existingCask)=>{
-        if(!existingCask){
-            return res.status(404).send({message: `Cask with ID ${id} does not exists`});
+
+    let success = await Cask.findByIdAndRemove(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`cask deleted`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
         }
-        Cask.findByIdAndRemove(id, (err)=>{
-            if(err){
-                next(err);
-            }
-        });
-        res.send({message: `Cask removed`});
-    })    
+    }else{
+        return res.status(400).json({ message: "inexistent cask" });
+    }
 }
 
 
@@ -86,23 +91,26 @@ exports.deleteCask = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.updateCask = (req, res, next)=>{
+exports.updateCask = async (req, res)=>{
     const id = req.params.id;
 
-    var creationDate = req.body.creationDate;
-    var removeDate = req.body.removeDate;
+    var creationDate = Date.parse(req.body.creationDate);
+    var removeDate = Date.parse(req.body.removeDate);
 
-    Cask.findOne({_id: id}, (err, existingCask)=>{
-        if(!existingCask){
-            return res.status(404).send({message: `Cask with ID ${id} does not exists`});
+    let success = await Cask.findByIdAndUpdate(id, {caskId: req.body.caskId, material: req.body.material, creationDate: creationDate, removeDate: removeDate, deposit: req.body.deposit}).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    })
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`cask updated`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
         }
-        Cask.findByIdAndUpdate(id, {caskId: req.body.caskId, material: req.body.material, creationDate: creationDate, removeDate: removeDate, deposit: req.body.deposit}, (err)=>{
-            if(err){
-                next(err);
-            }
-        })
-        res.send({message:`Cask updated`});
-    })    
+    }else{
+        return res.status(400).json({ message: "inexistent cask" });
+    }
 }
 
 
@@ -116,13 +124,22 @@ exports.updateCask = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readCask = (req, res, next)=>{
+exports.readCask = async (req, res)=>{
     const id = req.params.id;
-    
-    Cask.findById(id, (err, cask)=>{
-        if(err) next(err);
-        res.json(cask);
+    let success = await Cask.findById(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent cask" });
+    }
 }
 
 
@@ -135,9 +152,16 @@ exports.readCask = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readAllCasks = (req, res, next)=>{
-    Cask.find((err, casks)=>{
-        if(err) next(err);
-        res.json(casks)
+exports.readAllCasks = async (req, res)=>{
+    let success = await Cask.find().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }
 }

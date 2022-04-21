@@ -16,17 +16,27 @@ const mongoose = require('mongoose');
  * @returns {error} 409 - A message about the error
  *  
  */
-exports.postSignup = (req, res)=>{
+
+ exports.postSignup = async (req, res)=>{
     const newUser = new User({
         username: req.body.username,
         password: req.body.password
     });
 
-    newUser.save((err)=>{
-        if(err) return res.status(409).send({message:`username already registered: ${err}`})
-        
-        return res.status(200).send({token: service.createToken(newUser)})
-    })
+    let success = await newUser.save().catch((err)=>{
+        console.error("\nError: " + err)
+        return {error: err}
+    });
+
+    if(success){
+        if(!success.error){
+            return res.status(200).send({token: service.createToken(newUser)})
+        }else if(success.error){
+            return res.status(409).send({
+                message: "Error: " + success.error 
+            });
+        }
+    }
 }
 
 //iniciar sesión
@@ -41,29 +51,62 @@ exports.postSignup = (req, res)=>{
  * @returns {error} 404 - A message about the error
  *  
  */
-exports.postLogin = (req, res)=>{
- 
-    User.findOne({username: req.body.username},(err, user)=>{
-        if(err) return res.status(500).send({message: err})
-        if(!user) return res.status(404).send({message: 'username or password does not valids'})
 
-        var validPassword = bcrypt.compare(req.body.password, user.password, (err, eq)=>{
-            if(err){
-                return err;
-            }
-            if(eq){
-                req.user = user
-                res.status(200).send({
-                    message: 'Login correct',
-                    token: service.createToken(user)
-                })
-            }else{
-                return res.status(404).send({message: 'username or password does not valids'})
-            }
-        })
+
+ exports.postLogin = async (req, res)=>{ 
+    let success = await User.findOne({username: req.body.username}).catch((err)=>{
+        console.error("\nError: " + err)
+        return {error: err}
     })
 
+    if(success){
+        if(!success.error){
+            var validPassword = bcrypt.compare(req.body.password, success.password, (err, eq)=>{
+                if(err){
+                    return err;
+                }
+                if(eq){
+                    req.user = success
+                    res.status(200).send({
+                        message: 'Login correct',
+                        token: service.createToken(success)
+                    })
+                }else{
+                    return res.status(404).send({message: 'username or password does not valids'})
+                }
+            })
+        }else if(success.error){
+            return res.status(404).send({
+                message: "Error: " + success.error 
+            });
+        }
+    }else{
+        return res.status(400).json({message: 'username or password does not valids'});
+    }
 }
+
+// exports.postLogin = (req, res)=>{ 
+//     User.findOne({username: req.body.username},(err, user)=>{
+//         if(err) return res.status(500).send({message: err})
+//         if(!user) return res.status(404).send({message: 'username or password does not valids'})
+
+//         var validPassword = bcrypt.compare(req.body.password, user.password, (err, eq)=>{
+//             if(err){
+//                 return err;
+//             }
+//             if(eq){
+//                 req.user = user
+//                 res.status(200).send({
+//                     message: 'Login correct',
+//                     token: service.createToken(user)
+//                 })
+//             }else{
+//                 return res.status(404).send({message: 'username or password does not valids'})
+//             }
+//         })
+//     })
+
+// }
 
 
 //Eliminar usuario
@@ -76,14 +119,22 @@ exports.postLogin = (req, res)=>{
  * @returns {error} default - Unexpected error
  *  
  */
-exports.deleteUser = (req, res, next)=>{
+exports.deleteUser = async (req, res)=>{
     const userID = req.params.id;
-    User.findByIdAndRemove(userID, (err)=>{
-        if(err){
-            return next(err);
+    let success = User.findByIdAndRemove(userID).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
+
+    if(success){
+        if(!success.error){
+            return res.send({message: 'User removed succesfully'});
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
         }
-    })
-    res.send({message: 'User removed succesfully'});
+    }else{
+        return res.status(400).json({ message: "Error: " + success.error });
+    }
 }
 
 
@@ -99,47 +150,59 @@ exports.deleteUser = (req, res, next)=>{
  * @returns {error} 404 - A message about error
  *  
  */
-exports.updateUser = (req, res, next)=>{
+
+ exports.updateUser = async (req, res, next)=>{
     const userID = req.params.id;
     var newUsername=req.body.username;
     var newPassword=req.body.password;
 
     //find user with params.id
-    User.findOne({_id: userID}, (err, existingUser)=>{
-        if(!existingUser){
-            return res.status(404).send({message: 'User to modify inexistent'})
-        }
-        //find user with newUsername
-        if(!newUsername==''){
-            User.updateOne({_id: userID},{username:newUsername}, (err)=>{
-                if(err){
-                    //next(err);
-                    return res.status(400);
+    let success = User.findOne({_id: userID}).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
+
+    if(success){
+        if(!success.error){
+            if(!newUsername==''){
+                let updateUsername = User.updateOne({_id: userID},{username:newUsername}).catch((err)=>{
+                    console.error("\nError: " + err)
+                    return { error: err }
+                })
+                if(updateUsername){
+                    if(updateUsername.error){
+                        return res.status(400).json({ message: "Error: " + success.error });
+                    }
                 }
-            })
-        }
-            
-        if(!newPassword == ''){
-            bcrypt.genSalt(10, (err, salt)=>{
-                if(err){
-                    next(err);
-                }
-                bcrypt.hash(newPassword, salt, null, (err, hash)=>{
+                
+            }
+
+            if(!newPassword == ''){
+                bcrypt.genSalt(10, (err, salt)=>{
                     if(err){
                         next(err);
                     }
-                    newPassword=hash;
-                    User.updateOne({_id: userID},{password:newPassword}, (err)=>{
+                    bcrypt.hash(newPassword, salt, null, (err, hash)=>{
                         if(err){
-                            return next(err);
+                            next(err);
                         }
+                        newPassword=hash;
+                        User.updateOne({_id: userID},{password:newPassword}, (err)=>{
+                            if(err){
+                                return next(err);
+                            }
+                        })
+                        next();
                     })
-                    next();
                 })
-            })
+            }
+            res.send({message: `User updated succesfully`});  
+        }else if(success.error){
+            return res.status(404).send({message: 'User to modify inexistent'})
         }
-        res.send({message: `User updated succesfully`});  
-    })    
+    }else{
+        return res.status(400).json({ message: "Error: " + success.error });
+    }
 }
 
 //ver info de usuario

@@ -14,24 +14,25 @@ const Tank = require('../model/tank');
  * @returns {error} default - A message about error
  *  
  */
-exports.postCreateTank = (req, res, next)=>{
+exports.postCreateTank = async (req, res)=>{
     const newTank = new Tank({
         tankId:req.body.tankId,
         fromParcel:req.body.fromParcel,
         deposit:req.body.deposit
     })
 
-    Tank.findOne({tankId:req.body.tankId}, (err, existingTank)=>{
-        if(existingTank){
-            return res.status(409).send({message: `Tank with ID ${req.body.tankId} already exists`});
+    let success = await newTank.save().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
+    });
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`tank created`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
         }
-        newTank.save((err)=>{
-            if(err){
-                next(err);
-            }
-            res.send({message: 'Tank created'});
-        })
-    })
+    }
 }
 
 
@@ -46,20 +47,23 @@ exports.postCreateTank = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.deleteTank = (req, res, next)=>{
+exports.deleteTank = async (req, res)=>{
     const id = req.params.id;
-    Tank.findOne({_id:id}, (err, existingTank)=>{
-        if(!existingTank){
-            return res.status(404).send({message:`Tank with ID ${id} does not exists`});
-        }
-        Tank.findByIdAndRemove(id, (err)=>{
-            if(err){
-                next(err);
-            }
-        })
-        res.send({message: 'Tank removed'});
+
+    let success = await Tank.findByIdAndRemove(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
-    
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`tank removed`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent tank" });
+    }
 }
 
 //Update Tank
@@ -76,20 +80,23 @@ exports.deleteTank = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.updateTank = (req, res, next)=>{
+exports.updateTank = async (req, res)=>{
     const id = req.params.id;
-    Tank.findOne({_id:id}, (err, existingTank)=>{
-        if(!existingTank){
-            return res.status(400).send({message:`Tank with ID ${id} does not exists`});
-        }
-        Tank.findByIdAndUpdate(id, {tankId: req.body.tankId, fromParcel: req.body.fromParcel, deposit: req.body.deposit}, (err)=>{
-            if(err){
-                next(err);
-            }
-        })        
-        res.send({message:`Tank updated`});
+
+    let success = await Tank.findByIdAndUpdate(id, {tankId: req.body.tankId, fromParcel: req.body.fromParcel, deposit: req.body.deposit}).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
-   
+
+    if(success){
+        if(!success.error){
+            return res.send({message:`tank updated`});
+        }else if(success.error){
+            return res.status(400).send({message: "Error: " + success.error});
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent tank" });
+    }
 }
 
 //Read tank
@@ -102,13 +109,25 @@ exports.updateTank = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readTank = (req, res, next)=>{
+exports.readTank = async (req, res)=>{
     const id = req.params.id;
-    
-    Tank.findById(id, (err, tank)=>{
-        if(err) next(err);
-        res.json(tank);
+
+    let success = await Tank.findById(id).catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }else{
+        return res.status(400).json({ message: "inexistent tank" });
+    }
+    
+    
 }
 
 //Read all tanks
@@ -120,9 +139,16 @@ exports.readTank = (req, res, next)=>{
  * @returns {error} default - A message about error
  *  
  */
-exports.readAllTanks = (req, res, next)=>{
-    Tank.find((err, tanks)=>{
-        if(err) next(err);
-        res.json(tanks)
+exports.readAllTanks = async (req, res)=>{
+    let success = await Tank.find().catch((err)=>{
+        console.error("\nError: " + err)
+        return { error: err }
     })
+    if(success){
+        if(!success.error){
+            res.json(success);
+        }else if(success.error){
+            return res.status(400).json({ message: "Error: " + success.error });
+        }
+    }
 }
