@@ -1,8 +1,0 @@
-{
-    "PORT" : 3000,
-    "host": "localhost",
-    "urlDB" : "mongodb://localhost:27017/users",
-    "url": "mongodb://localhost:27017/",
-    "SECRET_TOKEN": "tokenspassword"
-
-}
