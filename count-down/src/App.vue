@@ -1,7 +1,6 @@
 <template>
   <div id='app'>
-    <img src='./assets/logo.png' />
-    <countdown />
+    <countdown time="50" />
   </div>
 </template>
 
@@ -16,12 +15,16 @@ export default {
 </script>
 
 <style>
+body{
+  padding: 20px;
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #000000;
   margin-top: 60px;
+  padding: 20px;
 }
 </style>
