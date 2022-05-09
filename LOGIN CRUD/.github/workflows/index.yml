@@ -3,7 +3,7 @@ name: index
 on: 
   push:
     branches:
-      - main
+      - loginCRUD
 
 jobs:
   hello_world:
