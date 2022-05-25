@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const config = require('./config/config.json')
+const config = require('../config/config.json')
 
 const deleteWorkspaceById = async (id) => {
     let success = await fetch(`${config.API_URL}/workspace/${id}`, {
