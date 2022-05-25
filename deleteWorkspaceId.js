@@ -29,4 +29,4 @@ const deleteWorkspaceById = async (id) => {
     }
 }
 
-deleteWorkspaceById('00000180f13171ab-10093694-91b5bf63-085bd230');
+export default deleteWorkspaceById;

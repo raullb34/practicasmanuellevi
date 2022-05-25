@@ -34,4 +34,4 @@ const postWorkspaces = async (name, desc) => {
     }
 }
 
-postWorkspaces("name", "desc");
+export default postWorkspaces;

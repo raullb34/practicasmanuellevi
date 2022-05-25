@@ -30,4 +30,4 @@ const getWorkspaces = async () => {
     }
 }
 
-getWorkspaces();
+export default getWorkspaces;

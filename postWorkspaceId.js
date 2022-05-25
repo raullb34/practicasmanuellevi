@@ -35,4 +35,4 @@ const postWorkspaceById = async (id, name, desc, DIA, secret) => {
     }
 }
 
-postWorkspaceById('00000180f13171ab-10093694-91b5bf63-085bd230', 'name', 'desc', true, 'string');
+export default postWorkspaceById;
