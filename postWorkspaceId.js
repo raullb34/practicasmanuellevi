@@ -1,0 +1,38 @@
+import fetch from 'node-fetch';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const config = require('./config/config.json')
+
+const postWorkspaceById = async (id, name, desc, DIA, secret) => {
+    let success = await fetch(`${config.API_URL}/workspace/${id}`, {
+        method: ('POST'),        //optional
+        body: JSON.stringify({
+            name: `${name}`,
+            description: `${desc}`,
+            disableIndividualAlerts: `${DIA}`,
+            secret: `${secret}`,
+        }),
+        headers: {                              //optional
+            'Content-Type' : 'application/json',   //optional
+            'x-auth-token' : config['x-auth-token']
+        },
+    })
+    .then(res => res.json())
+    .catch((err)=>{
+        console.error("\nError" + err)
+        return {error : err}
+    })
+
+    if(success){
+        if(!success.error){
+            console.log(success)
+            return success;
+        }else if(success.error){
+            return Promise.reject
+        }
+    }else{
+        return Promise.reject
+    }
+}
+
+postWorkspaceById('00000180f13171ab-10093694-91b5bf63-085bd230', 'name', 'desc', true, 'string');
